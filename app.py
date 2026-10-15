@@ -1,6 +1,14 @@
 import streamlit as st
 from huggingface_hub import InferenceClient
 
+from transformers import pipeline
+
+pipe = pipeline("text-generation", model="Qwen/Qwen2.5-7B-Instruct")
+messages = [
+    {"role": "user", "content": "Who are you?"},
+]
+pipe(messages)
+
 client = InferenceClient(
     provider="auto",
     api_key=st.secrets["HF_TOKEN"]
@@ -48,7 +56,7 @@ with st.chat_message("assistant"):
     with st.spinner("Lipo sedang mengetik..."):
         try:
             response = client.chat_completion(
-                model="Qwen/Qwen2.5-3B-Instruct",
+                model="Qwen/Qwen2.5-7B-Instruct",
                 messages=st.session_state.messages,
                 max_tokens=512,
                 temperature=0.8,
