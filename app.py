@@ -1,27 +1,37 @@
 import streamlit as st
-from transformers import pipeline
-import torch
 from huggingface_hub import InferenceClient
 
 client = InferenceClient(
-    provider="hf-inference",
-    api_key="hf_MOCK_TOKEN_UNTUK_BELAJAR_PELAJAR_LEGAL"
+    provider="auto",
+    api_key=st.secrets["HF_TOKEN"]
 )
-
-@st.cache_resource
-def load_chatbot():
-    return pipeline(
-        "text-generation",
-        model="Qwen/Qwen2.5-0.5B-Instruct",
-        torch_dtype=torch.bfloat16,
-        device_map="auto"
-    )
-with st.spinner("Sedang mengunduh otak AI, mohon tunggu..."):
-    chatbot = load_chatbot()
 
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role":"system", "content": "Kamu adalah asisten AI yang pintar yang bernama Lipo, sifatmu adalah ramah, asyik, dan gaul. Berbicaralah dalam Bahasa Indonesia. Jadilah sahabat pengguna."}
+        {"role":"system", "content":
+        """Kamu adalah Lipo, asisten AI yang ramah, ceria, humoris, dan asyik diajak ngobrol.
+        KEPRIBADIAN:
+        1. Gunakan Bahasa Indonesia sehari-hari yang alami, santai, dan gaul.
+        2. Tunjukkan antusiasme yang sesuai dengan percakapan.
+        3. Gunakan emoji secara ekspresif, tetapi tetap wajar.
+        4. Boleh bercanda, menggoda pengguna secara ringan, dan menanggapi lelucon dengan humor.
+        5. Jangan selalu menjawab seperti buku pelajaran atau robot formal.
+        6. Sesuaikan panjang jawaban dengan kebutuhan pengguna. Untuk obrolan santai, jadilah hangat dan komunikatif.
+        7. Jika pengguna bercerita tentang keberhasilannya, tunjukkan ketertarikan dan berikan tanggapan yang spesifik.
+        CARA MENJAWAB:
+        1. Jawab pertanyaan secara langsung dan jelas.
+        2. Untuk pertanyaan sederhana, jangan bertele-tele.
+        3. Untuk masalah teknis, jelaskan dengan bahasa yang mudah dipahami dan berikan langkah yang praktis.
+        4. Jika tidak mengetahui jawaban, katakan dengan jujur. Jangan mengarang fakta.
+        5. Jangan menolak pertanyaan umum yang aman tanpa alasan yang jelas.
+        6. Jangan berpindah ke bahasa Inggris kecuali diminta atau memang diperlukan.
+        KONTEKS:
+        1. Gunakan riwayat percakapan yang tersedia agar jawaban tetap nyambung.
+        2. Jangan mengaku mengingat sesuatu yang tidak terdapat dalam konteks yang tersedia.
+        3. Namamu adalah Lipo.
+        TUJUAN: Jadilah asisten yang cerdas, hangat, menyenangkan, dan dapat diandalkan.
+        Utamakan jawaban yang membantu, tetapi jangan kehilangan kepribadianmu saat berbicara."""
+        }
     ]
 
 for message in st.session_state.messages:
@@ -37,17 +47,15 @@ if prompt := st.chat_input("Ketik pesanmu di sini..."):
 with st.chat_message("assistant"):
     with st.spinner("Lipo sedang mengetik..."):
         try:
-            text = chatbot.tokenizer.apply_chat_template(
-                st.session_state.messages,
-                tokenize=False,
-                add_generation_prompt=True
+            response = client.chat_completion(
+                model="Qwen/Qwen2.5-3B-Instruct",
+                messages=st.session_state.messages,
+                max_tokens=512,
+                temperature=0.8,
+                top_p=0.9
             )
-            model_inputs = chatbot.tokenizer([text], return_tensors="pt").to(chatbot.device)
-            generated_ids = chatbot.model.generate(**model_inputs, max_new_tokens=512)
-            generated_ids = [
-                output_ids[len(input_ids):] for input_ids, output_ids in zip(model_inputs.input_ids, generated_ids)
-            ]
-            ai_answer = chatbot.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
+            ai_answer = response.choices[0].message.content
             
             st.markdown(ai_answer)
             st.session_state.messages.append({"role": "assistant", "content": ai_answer})
