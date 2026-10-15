@@ -1,6 +1,9 @@
 import gradio as gr
 from transformers import pipeline
 import torch
+from fastapi import FastAPI
+
+app = FastAPI()
 
 print("Sedang mengunduh otak AI... Mohon tunggu sebentar.")
 chatbot = pipeline(
@@ -45,4 +48,4 @@ demo = gr.ChatInterface(
     description="Aplikasi Chat AI.",
 )
 
-demo.launch(server_name="0.0.0.0", server_port=7860)
+app = gr.mount_gradio_app(app, demo, path="/")
