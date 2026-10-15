@@ -33,14 +33,6 @@ def talking(my_chat):
   ai_answer = chatbot.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
   return ai_answer
 
-completion = client.chat.completions.create(
-    model="Qwen/Qwen2.5-0.5B-Instruct",
-    messages=messages,
-    max_tokens=256
-)
-
-return completion.choices[0].message.content
-
 def fungsi_aplikasi(pesan_user, riwayat):
     try:
         jawaban_dari_ai = talking(pesan_user)
