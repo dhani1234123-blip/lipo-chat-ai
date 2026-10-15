@@ -2,6 +2,7 @@ import gradio as gr
 from transformers import pipeline
 import torch
 from fastapi import FastAPI
+from huggingface_hub import InferenceClient
 
 app = FastAPI()
 
