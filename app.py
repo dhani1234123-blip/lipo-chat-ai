@@ -5,6 +5,11 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+client = InferenceClient(
+    provider="hf-inference",
+    api_key="hf_MOCK_TOKEN_UNTUK_BELAJAR_PELAJAR_LEGAL"
+)
+
 print("Sedang mengunduh otak AI... Mohon tunggu sebentar.")
 chatbot = pipeline(
     "text-generation",
@@ -27,6 +32,14 @@ def talking(my_chat):
 
   ai_answer = chatbot.tokenizer.batch_decode(generated_ids, skip_special_tokens=True)[0]
   return ai_answer
+
+completion = client.chat.completions.create(
+    model="Qwen/Qwen2.5-0.5B-Instruct",
+    messages=messages,
+    max_tokens=256
+)
+
+return completion.choices[0].message.content
 
 def fungsi_aplikasi(pesan_user, riwayat):
     try:
