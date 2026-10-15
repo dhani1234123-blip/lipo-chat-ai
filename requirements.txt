@@ -1,4 +1,2 @@
-gradio
-transformers
-torch
-accelerate
+streamlit
+huggingface_hub
