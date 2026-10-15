@@ -38,7 +38,7 @@ with st.chat_message("assistant"):
     with st.spinner("Lipo sedang mengetik..."):
         try:
             text = chatbot.tokenizer.apply_chat_template(
-                st.session_state.massages,
+                st.session_state.messages,
                 tokenize=False,
                 add_generation_prompt=True
             )
