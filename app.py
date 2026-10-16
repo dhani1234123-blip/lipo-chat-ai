@@ -1,8 +1,6 @@
 import streamlit as st
 from huggingface_hub import InferenceClient
 
-from transformers import pipeline
-
 client = InferenceClient(
     provider="auto",
     api_key=st.secrets["HF_TOKEN"]
