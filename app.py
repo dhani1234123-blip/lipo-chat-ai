@@ -3,12 +3,6 @@ from huggingface_hub import InferenceClient
 
 from transformers import pipeline
 
-pipe = pipeline("text-generation", model="Qwen/Qwen2.5-7B-Instruct")
-messages = [
-    {"role": "user", "content": "Who are you?"},
-]
-pipe(messages)
-
 client = InferenceClient(
     provider="auto",
     api_key=st.secrets["HF_TOKEN"]
